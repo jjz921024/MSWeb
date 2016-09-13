@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+       Copyright 2009-2012 the original author or authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Book">
+
+  <resultMap type="com.gdut.springdemo.model.Book" id="BookResult">
+    <id column="ID" jdbcType="INTEGER" property="id"/>
+    <result column="NAME" jdbcType="VARCHAR" property="name"/>
+    <result column="PRICE" jdbcType="DECIMAL" property="price"/>
+    <result column="PUBLICATIONDATE" jdbcType="DATE" property="publicationDate"/>
+    <result column="DESCRIPTION" jdbcType="CLOB" property="description"/>
+  </resultMap>
+
+    <select id="getBookByID" parameterType="int" resultMap="BookResult">
+        SELECT id, name, price, publicationDate, description,imgPath FROM book WHERE id = #{id:INTEGER}
+    </select>
+
+  <select id="getAllBooks" resultMap="BookResult">
+    SELECT id, name, price, publicationDate, description, imgPath FROM book
+  </select>
+
+    <!--useGeneratedKeys要求数据库有主键自动递增功能  keyProperty为类的属性名-->
+  <insert id="add" parameterType="com.gdut.springdemo.model.Book" useGeneratedKeys="true" keyProperty="id">
+      <!-- 返回自增id -->
+      <selectKey order="AFTER" keyProperty="id" resultType="int">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
+    INSERT INTO book
+    (name,
+    price,
+    publicationDate,
+    description,
+    imgPath
+    )
+    VALUES
+    (#{name,jdbcType=VARCHAR},
+    #{price,jdbcType=DECIMAL},
+    #{publicationDate,jdbcType=DATE},
+    #{description,jdbcType=CLOB},
+    #{imgPath,jdbcType=VARCHAR}
+    )
+  </insert>
+
+    <update id="update" parameterType="com.gdut.springdemo.model.Book" >
+      UPDATE book SET
+      name = #{name,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DECIMAL},
+      publicationDate = #{publicationDate,jdbcType=DATE},
+      description = #{description,jdbcType=CLOB},
+      imgPath = #{imgPath,jdbcType=VARCHAR}
+      WHERE
+      id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteBookByID" parameterType="int">
+        DELETE FROM book WHERE id=#{id,jdbcType=INTEGER}
+    </delete>
+
+</mapper>

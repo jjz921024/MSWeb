@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+    <display-name>SpringDemo</display-name>
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- 配置Spring监听器 -->
+    <!-- 自动装配所有的配置信息 -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!-- Spring应用上下文， 理解层次化的ApplicationContext -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath*:springconfig/spring-bean.xml
+            classpath*:springconfig/spring-validate.xml
+        </param-value>
+
+    </context-param>
+
+    <!-- SpringMVC DispatcherServlet配置-->
+    <servlet>
+        <servlet-name>mvc-dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath*:springconfig/springmvc-config.xml</param-value>   <!--注意classpath-->
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>mvc-dispatcher</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <!--获取web根目录监听器  System.getProperty("SpringDemo.root")-->
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>SpringDemo.root</param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
+    </listener>
+
+</web-app>
