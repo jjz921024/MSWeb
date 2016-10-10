@@ -1,6 +1,6 @@
 package com.gdut.springdemo.controller;
 
-import com.gdut.springdemo.model.User;
+import com.gdut.springdemo.model.CustomUser;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +23,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/test")
-    public String objecttest(@Validated User user, BindingResult bindingResult, Model model){
+    public String objecttest(@Validated CustomUser user, BindingResult bindingResult, Model model){
         //// TODO: 2016/9/11 形参BindingResult要跟在实体类后面，否则报404错误
         model.addAttribute("user", user);
 

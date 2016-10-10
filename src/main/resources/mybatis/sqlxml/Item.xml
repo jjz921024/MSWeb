@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+       Copyright 2009-2012 the original author or authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Item">
+
+  <resultMap type="com.gdut.springdemo.model.Item" id="ItemResult">
+    <id column="ID" jdbcType="INTEGER" property="id"/>
+    <result column="URL" jdbcType="VARCHAR" property="url"/>
+    <result column="PRODUCT_NAME" jdbcType="VARCHAR" property="productName"/>
+    <result column="CREATE_DATE" jdbcType="TIMESTAMP" property="createDate"/>
+    <result column="CURRENT_PRICE" jdbcType="DECIMAL" property="currentPrice"/>
+    <result column="BUTTOM_PRICE" jdbcType="DECIMAL" property="buttomPrice"/>
+    <result column="ENABLED" jdbcType="BIT" property="enabled"/>
+  </resultMap>
+
+  <select id="getItemByID" parameterType="int" resultMap="ItemResult">
+      SELECT id, url, product_name, create_date, current_price, buttom_price, enabled FROM item WHERE id = #{id:INTEGER}
+  </select>
+
+  <select id="getAllItems" resultMap="ItemResult">
+      SELECT id, url, product_name, create_date, current_price, buttom_price, enabled FROM item
+  </select>
+
+    <!--useGeneratedKeys要求数据库有主键自动递增功能  keyProperty为类的属性名-->
+  <insert id="addItem" parameterType="com.gdut.springdemo.model.Item" useGeneratedKeys="true" keyProperty="id">
+      <!-- 返回自增id -->
+      <selectKey order="AFTER" keyProperty="id" resultType="java.lang.Integer">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
+    INSERT INTO item
+    (url,
+    product_name,
+    create_date,
+    current_price,
+    buttom_price
+    )
+    VALUES
+    (#{url,jdbcType=VARCHAR},
+    #{productName,jdbcType=VARCHAR},
+    #{createDate,jdbcType=TIMESTAMP},
+    #{currentPrice,jdbcType=DECIMAL},
+    #{buttomPrice,jdbcType=DECIMAL}
+    )
+  </insert>
+
+  <update id="updateItem" parameterType="com.gdut.springdemo.model.Item" >
+      UPDATE item SET
+      url = #{url,jdbcType=VARCHAR}
+      WHERE
+      id = #{id,jdbcType=INTEGER}
+    </update>
+
+  <delete id="deleteItemByID" parameterType="int">
+        DELETE FROM item WHERE id=#{id,jdbcType=INTEGER}
+    </delete>
+
+</mapper>

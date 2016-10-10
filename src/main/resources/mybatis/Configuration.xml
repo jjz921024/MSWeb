@@ -27,7 +27,7 @@
   </settings>
 
   <typeAliases>
-    <typeAlias alias="UserAlias" type="org.apache.ibatis.submitted.complex_property.User"/>
+    <typeAlias alias="UserAlias" type="org.apache.ibatis.submitted.complex_property.CustomUser"/>
   </typeAliases>-->
 
   <environments default="development">
@@ -47,7 +47,9 @@
   </environments>
 
   <mappers>
-    <mapper resource="/mybatis/sqlxml/Book.xml"/>
+    <mapper resource="/mybatis/sqlxml/Item.xml"/>
+    <mapper resource="/mybatis/sqlxml/User.xml"/>
+    <mapper resource="/mybatis/sqlxml/UserItem.xml"/>
   </mappers>
 
 </configuration>

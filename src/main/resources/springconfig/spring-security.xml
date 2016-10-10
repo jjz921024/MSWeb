@@ -1,43 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns:security="http://www.springframework.org/schema/security"
-             xmlns="http://www.springframework.org/schema/beans"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://www.springframework.org/schema/beans
-      http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-      http://www.springframework.org/schema/security
-      http://www.springframework.org/schema/security/spring-security-4.0.xsd ">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security-3.0.xsd
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <!-- 静态资源，不用权限 -->
-    <security:http pattern="/resources/**" security="none"/>
+    <!--<security:http pattern="/resources/**" security="none"/>-->
 
-    <security:http use-expressions="true" auto-config="true">
+    <!-- auto-config = true 则使用from-login. 如果不使用该属性 则默认为http-basic(没有session). use-expressions用于解释hasRole -->
+    <security:http auto-config="true" use-expressions="true" access-denied-page="/auth/denied">
+
+        <!--<security:custom-filter ref="myFilter" before="FILTER_SECURITY_INTERCEPTOR"/>-->
+
+        <!-- intercept-url:拦截器,可以设定哪些路径需要哪些权限来访问. filters=none 不使用过滤,也可以理解为忽略 -->
         <security:intercept-url pattern="/auth/login" access="permitAll"/>
+        <security:intercept-url pattern="/reg/*" access="permitAll"/>
         <security:intercept-url pattern="/main/admin" access="hasRole('ROLE_ADMIN')"/>
         <security:intercept-url pattern="/main/common" access="hasRole('ROLE_USER')"/>
+        <security:intercept-url pattern="/item/*" access="hasRole('ROLE_USER')"/>
 
-        <security:form-login login-page="/auth/login"
-                              authentication-failure-url="/auth/login?error=true"
-                              default-target-url="/main/common"/>
-        <!--always-use-default-target="true"-->
+        <!--<security:intercept-url pattern="/auth/login" filters="none"/>-->
+        <!--
+             login-page:默认指定的登录页面.
+             authentication-failure-url:出错后跳转页面.
+             default-target-url:成功登陆后跳转页面 默认登录保护url
+         -->
+        <security:form-login  login-page="/auth/login" authentication-failure-url="/auth/login?error=true"
+                              default-target-url="/item/list" login-processing-url="/j_spring_security_check"/>
 
+        <!-- logout-success-url:成功注销后跳转到的页面-->
+        <security:logout invalidate-session="true" logout-url="/j_spring_security_logout" logout-success-url="/auth/login?logout=true"/>
 
-        <!--<security:logout invalidate-session="true"
-                         logout-url="/logout"
-                         logout-success-url="/"/>
-
-        <security:csrf disabled="true"/>-->
-
-        <!--<custom-filter ref="loginFilter" position="FORM_LOGIN_FILTER"/>-->
+        <security:session-management>
+            <security:concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>
+        </security:session-management>
+        <security:http-basic/>
     </security:http>
 
+   <!-- <bean id="myFilter" class="com.gdut.springdemo.security.MyFilterSecurityInterceptor">-->
+        <!-- 用户拥有的权限 -->
+        <!--<property name="authenticationManager" ref="authenticationManager"/>-->
+        <!-- 用户是否拥有所请求资源的权限 -->
+        <!--<property name="accessDecisionManager" ref="myAccessDecisionManagerBean"/>-->
+        <!-- 资源与权限对应关系 -->
+        <!--<property name="securityMetadataSource" ref="myInvocationSecurityMetadataSourceService"/>-->
+    <!--</bean>-->
+
     <security:authentication-manager alias="authenticationManager">
-        <security:authentication-provider user-service-ref="customUserDetailsService">
+        <security:authentication-provider user-service-ref="customUserDetailsService"/>
+        <!--<security:authentication-provider>
+            <security:user-service>
+                <security:user name="admin" password="1234" authorities="ROLE_USER" />
+            </security:user-service>
+        </security:authentication-provider>-->
+        <!--<security:authentication-provider>
+            <security:jdbc-user-service data-source-ref="dataSource"/>
             <security:password-encoder ref="passwordEncoder"/>
-        </security:authentication-provider>
+        </security:authentication-provider>-->
     </security:authentication-manager>
 
-    <!-- 对密码进行MD5编码 -->
-    <bean class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" id="passwordEncoder"/>
+    <!--<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/spring-demo"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+    </bean>-->
 
-    <bean id="customUserDetailsService" class="com.gdut.springdemo.service.BookServiceImpl2"/>
+    <!-- 对密码进行MD5编码 -->
+    <!--<bean class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" id="passwordEncoder"/>-->
+    <!-- 用户信息查询 -->
+    <bean id="customUserDetailsService" class="com.gdut.springdemo.security.CustomUserDetailsService"/>
+
+    <!-- 访问决策器，决定某个用户具有的角色，是否有足够的权限去访问某个资源 -->
+    <!--<bean id="myAccessDecisionManagerBean" class="com.gdut.springdemo.security.MyAccessDecisionManager"/>-->
+    <!-- 资源源数据定义，将所有的资源和权限对应关系建立起来，即定义某一资源可以被哪些角色访问 -->
+    <!--<bean id="myInvocationSecurityMetadataSourceService" class="com.gdut.springdemo.security.MyInvocationSecurityMetadataSourceService"/>-->
+
+
 </beans>

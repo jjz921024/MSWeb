@@ -18,14 +18,14 @@ public class DateFormatter implements Formatter<Date> {
     @Override
     public Date parse(String s, Locale locale) throws ParseException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        log.info("formatter parse.............");
+        log.info("formatter parse解析成Date.............");
         return simpleDateFormat.parse(s);
     }
 
     @Override
     public String print(Date date, Locale locale) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
-        log.info("formatter format.............");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
+        log.info("formatter format格式化成字符串.............");
         return simpleDateFormat.format(date);
     }
 }
