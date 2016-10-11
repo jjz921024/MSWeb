@@ -18,7 +18,9 @@ public class DBAccess {
     public SqlSession getSqlSession() throws IOException{
 
         //通过配置文件获取数据库连接信息
-        Reader reader = Resources.getResourceAsReader("/mybatis/Configuration.xml");
+        //测试时路径  "resources/mybatis/Configuration.xml" 或者把/去掉
+        //   /mybatis/Configuration.xml
+        Reader reader = Resources.getResourceAsReader("resources/mybatis/Configuration.xml");
 
         //通过配置信息构建SqlSessionFactory
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);

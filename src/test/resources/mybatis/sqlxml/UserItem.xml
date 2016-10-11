@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+       Copyright 2009-2012 the original author or authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserItem">
+
+  <resultMap type="com.gdut.springdemo.model.UserItem" id="UserItemResult">
+    <id column="ID" jdbcType="INTEGER" property="id"/>
+    <result column="USER_ID" jdbcType="INTEGER" property="userID"/>
+    <result column="ITEM_ID" jdbcType="INTEGER" property="itemID"/>
+    <result column="ITEM_NAME" jdbcType="VARCHAR" property="itemName"/>
+    <result column="EMAIL_NOTICE" jdbcType="BIT" property="emailNotice"/>
+    <result column="WEIBO_NOTICE" jdbcType="BIT" property="weiboNotice"/>
+  </resultMap>
+
+    <!--useGeneratedKeys要求数据库有主键自动递增功能  keyProperty为类的属性名-->
+  <insert id="addUserItem" parameterType="com.gdut.springdemo.model.UserItem" useGeneratedKeys="true" keyProperty="id">
+      <!-- 返回自增id -->
+      <selectKey order="AFTER" keyProperty="id" resultType="int">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
+    INSERT INTO useritem
+    (user_id,
+      item_id,
+      item_name,
+      email_notice,
+      weibo_notice
+    )
+    VALUES
+    (#{userID,jdbcType=INTEGER},
+    #{itemID,jdbcType=INTEGER},
+    #{itemName,jdbcType=VARCHAR},
+    #{emailNotice,jdbcType=BIT},
+    #{weiboNotice,jdbcType=BIT}
+    )
+  </insert>
+
+  <delete id="deleteUserItemByTwoID" parameterType="com.gdut.springdemo.model.UserItem">
+    DELETE FROM useritem WHERE user_id=#{userID,jdbcType=INTEGER} AND item_id=#{itemID,jdbcType=INTEGER}
+  </delete>
+
+  <select id="getUserItemByItemID" parameterType="int" resultMap="UserItemResult">
+    SELECT id, user_id, item_id, item_name, email_notice, weibo_notice FROM useritem WHERE item_id = #{itemID:INTEGER}
+  </select>
+
+  <!-- UserItem表的操作都根据userID和ItemID -->
+  <update id="updateUserItem" parameterType="com.gdut.springdemo.model.UserItem" >
+    UPDATE useritem SET
+    item_name = #{itemName,jdbcType=VARCHAR},
+    email_notice = #{emailNotice,jdbcType=BIT},
+    weibo_notice = #{weiboNotice,jdbcType=BIT}
+    WHERE
+    user_id=#{userID,jdbcType=INTEGER} AND item_id=#{itemID,jdbcType=INTEGER}
+  </update>
+
+</mapper>

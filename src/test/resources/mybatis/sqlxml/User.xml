@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+       Copyright 2009-2012 the original author or authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="User">
+
+  <resultMap type="com.gdut.springdemo.model.CustomUser" id="UserResult">
+    <id column="ID" jdbcType="INTEGER" property="id"/>
+    <result column="NAME" jdbcType="VARCHAR" property="name"/>
+    <result column="PASSWORD" jdbcType="VARCHAR" property="password"/>
+    <result column="ISADMIN" jdbcType="BIT" property="isadmin"/>
+    <result column="ENABLED" jdbcType="BIT" property="enabled"/>
+    <result column="EMAIL" jdbcType="VARCHAR" property="email"/>
+    <result column="WEIBO" jdbcType="VARCHAR" property="weibo"/>
+  </resultMap>
+
+  <select id="getUserByName" parameterType="String" resultMap="UserResult">
+    SELECT id, name, password, isadmin, enabled, email, weibo FROM user WHERE name = #{name:VARCHAR}
+  </select>
+
+  <select id="getUserByID" parameterType="int" resultMap="UserResult">
+    SELECT id, name, password, isadmin, enabled, email, weibo FROM user WHERE id = #{id:INTEGER}
+  </select>
+
+  <insert id="addUser" parameterType="com.gdut.springdemo.model.CustomUser" useGeneratedKeys="true" keyProperty="id">
+    <!-- 返回自增id -->
+    <selectKey order="AFTER" keyProperty="id" resultType="int">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    INSERT INTO user
+    (name,
+    password,
+    isadmin,
+    enabled,
+    email,
+    weibo
+    )
+    VALUES
+    (#{name,jdbcType=VARCHAR},
+    #{password,jdbcType=VARCHAR},
+    #{isadmin,jdbcType=BIT},
+    #{enabled,jdbcType=BIT},
+    #{email,jdbcType=VARCHAR},
+    #{weibo,jdbcType=VARCHAR}
+    )
+  </insert>
+
+  <update id="updateUserByID" parameterType="com.gdut.springdemo.model.CustomUser" >
+    UPDATE user SET
+    name = #{name,jdbcType=VARCHAR},
+    password = #{password,jdbcType=VARCHAR},
+    isadmin = #{isadmin,jdbcType=BIT},
+    enabled = #{enabled,jdbcType=BIT},
+    email = #{email,jdbcType=VARCHAR},
+    weibo = #{weibo,jdbcType=VARCHAR}
+    WHERE
+    id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <delete id="deleteUserByID" parameterType="int">
+    DELETE FROM user WHERE id=#{id,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteUserByName" parameterType="String">
+    DELETE FROM user WHERE id=#{name,jdbcType=VARCHAR}
+  </delete>
+
+</mapper>
